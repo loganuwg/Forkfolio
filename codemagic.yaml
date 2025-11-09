@@ -22,3 +22,58 @@ workflows:
           echo "Configure signing and TestFlight deployment in Codemagic once Apple credentials are available."
     artifacts:
       - build/ios/**/*.ipa
+
+  ios-release:
+    name: Forkfolio iOS Release (TestFlight)
+    environment:
+      vars:
+        XCODE_PROJECT: "Forkfolio.xcodeproj"
+        XCODE_SCHEME: "Forkfolio"
+        EXPORT_METHOD: app-store
+        ARCHIVE_PATH: "$CM_BUILD_DIR/Forkfolio.xcarchive"
+        EXPORT_PATH: "$CM_BUILD_DIR/Export"
+        IPA_PATH: "$CM_BUILD_DIR/Export/Forkfolio.ipa"
+        # Set these in Codemagic UI as secure env vars when you recover access:
+        # APP_STORE_CONNECT_ISSUER_ID: "<issuer-id>"
+        # APP_STORE_CONNECT_KEY_IDENTIFIER: "<key-id>"
+        # APP_STORE_CONNECT_PRIVATE_KEY: "<base64-encoded .p8 contents>"
+    scripts:
+      - name: Install tools
+        script: |
+          brew update
+          brew install xcodegen
+      - name: Generate Xcode project
+        script: |
+          xcodegen generate
+      - name: Xcode Archive (requires signing configured in Codemagic)
+        script: |
+          xcodebuild -project "$XCODE_PROJECT" \
+                     -scheme "$XCODE_SCHEME" \
+                     -configuration Release \
+                     -destination "generic/platform=iOS" \
+                     -archivePath "$ARCHIVE_PATH" archive | xcpretty
+      - name: Export IPA for App Store
+        script: |
+          cat > exportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>${EXPORT_METHOD}</string>
+            <key>uploadBitcode</key><false/>
+            <key>uploadSymbols</key><true/>
+            <key>destination</key><string>export</string>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive -archivePath "$ARCHIVE_PATH" -exportOptionsPlist exportOptions.plist -exportPath "$EXPORT_PATH" | xcpretty
+          ls -la "$EXPORT_PATH"
+    artifacts:
+      - $EXPORT_PATH/**/*.ipa
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true
+        beta_groups: "Internal Testers"
