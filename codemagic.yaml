@@ -24,8 +24,8 @@ workflows:
           mkdir -p "$CM_BUILD_DIR/Screenshots"
           brew tap chargepoint/xcparse || true
           brew install xcparse || true
-          # Extract only screenshot attachments as PNGs into Screenshots/
-          xcparse attachments result.xcresult "$CM_BUILD_DIR/Screenshots" --only screenshots || true
+          # Extract screenshots as PNGs into Screenshots/
+          xcparse screenshots result.xcresult "$CM_BUILD_DIR/Screenshots" || true
           echo "Extracted files:"
           ls -la "$CM_BUILD_DIR/Screenshots" || true
       - name: Note
