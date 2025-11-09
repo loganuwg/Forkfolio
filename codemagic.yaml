@@ -21,16 +21,18 @@ workflows:
         script: |
           rm -rf result.xcresult
           xcodebuild -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -sdk iphonesimulator -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' test -resultBundlePath result.xcresult -only-testing:ForkfolioUITests | xcpretty || true
-          mkdir -p Screenshots
+          mkdir -p "$CM_BUILD_DIR/Screenshots"
           brew tap chargepoint/xcparse || true
           brew install xcparse || true
           # Extract only screenshot attachments as PNGs into Screenshots/
-          xcparse attachments result.xcresult Screenshots --only screenshots || true
+          xcparse attachments result.xcresult "$CM_BUILD_DIR/Screenshots" --only screenshots || true
+          echo "Extracted files:"
+          ls -la "$CM_BUILD_DIR/Screenshots" || true
       - name: Note
         script: |
           echo "Configure signing and TestFlight deployment in Codemagic once Apple credentials are available."
     artifacts:
-      - Screenshots/**/*
+      - $CM_BUILD_DIR/Screenshots/**/*
       - build/ios/**/*.ipa
 
   ios-release:
