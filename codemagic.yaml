@@ -1,0 +1,24 @@
+workflows:
+  ios-app:
+    name: Forkfolio iOS Build (Template)
+    environment:
+      vars:
+        XCODE_PROJECT: "Forkfolio.xcodeproj"
+        XCODE_SCHEME: "Forkfolio"
+    scripts:
+      - name: Install XcodeGen
+        script: | 
+          brew update
+          brew install xcodegen
+      - name: Generate Xcode project from project.yml
+        script: |
+          xcodegen generate
+          ls -la
+      - name: Build (no signing)
+        script: |
+          xcodebuild -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -sdk iphonesimulator -configuration Debug build | xcpretty || true
+      - name: Note
+        script: |
+          echo "Configure signing and TestFlight deployment in Codemagic once Apple credentials are available."
+    artifacts:
+      - build/ios/**/*.ipa
