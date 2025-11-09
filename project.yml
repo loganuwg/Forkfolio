@@ -6,7 +6,7 @@ options:
 packages: {}
 settings:
   base:
-    PRODUCT_BUNDLE_IDENTIFIER: com.example.Forkfolio # TODO: replace with your Bundle ID
+    PRODUCT_BUNDLE_IDENTIFIER: com.loganuwg.Forkfolio
     SWIFT_VERSION: 5.9
     TARGETED_DEVICE_FAMILY: 1,2 # iPhone, iPad
     GENERATE_INFOPLIST_FILE: YES
