@@ -1,0 +1,50 @@
+name: Forkfolio
+options:
+  developmentLanguage: en
+  deploymentTarget:
+    iOS: 16.0
+packages: {}
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.example.Forkfolio # TODO: replace with your Bundle ID
+    SWIFT_VERSION: 5.9
+    TARGETED_DEVICE_FAMILY: 1,2 # iPhone, iPad
+    GENERATE_INFOPLIST_FILE: YES
+    SUPPORTS_MACCATALYST: NO
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 0.1.0
+    ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+
+targets:
+  Forkfolio:
+    type: application
+    platform: iOS
+    sources:
+      - path: iOS/Source
+    settings:
+      base:
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: [UIInterfaceOrientationPortrait]
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: [UIInterfaceOrientationPortrait]
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.lifestyle
+        INFOPLIST_KEY_UIRequiresFullScreen: NO
+        INFOPLIST_KEY_UIUserInterfaceStyle: Automatic
+    scheme:
+      testTargets: []
+  ForkfolioTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: iOS/Tests
+    dependencies:
+      - target: Forkfolio
+schemes:
+  Forkfolio:
+    build:
+      targets:
+        Forkfolio: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - ForkfolioTests

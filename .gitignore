@@ -1,0 +1,16 @@
+# Xcode and Swift
+.DS_Store
+/.build
+/DerivedData
+*.xcworkspace
+xcuserdata/
+*.xcuserdatad
+*.xcuserstate
+*.xcscmblueprint
+
+# SwiftPM
+Packages/
+Package.resolved
+
+# Logs
+*.log
