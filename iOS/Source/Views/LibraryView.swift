@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LibraryView: View {
-    @EnvironmentObject var repository: InMemoryRepository
+    @EnvironmentObject var repository: CoreDataRepository
     @StateObject private var vm = LibraryViewModel()
 
     var body: some View {

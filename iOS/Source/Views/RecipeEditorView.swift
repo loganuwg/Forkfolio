@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct RecipeEditorView: View {
-    @EnvironmentObject var repository: InMemoryRepository
-    @StateObject private var vm = RecipeEditorViewModel(repository: InMemoryRepository(), parsing: ParsingService())
+    @EnvironmentObject var repository: CoreDataRepository
+    @StateObject private var vm = RecipeEditorViewModel(parsing: ParsingService())
 
     var body: some View {
         Form {
