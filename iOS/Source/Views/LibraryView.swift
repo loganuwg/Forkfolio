@@ -3,6 +3,8 @@ import SwiftUI
 struct LibraryView: View {
     @EnvironmentObject var repository: CoreDataRepository
     @StateObject private var vm = LibraryViewModel()
+    @State private var showingImporter = false
+    @State private var importError: String?
 
     var body: some View {
         NavigationStack {
@@ -45,6 +47,14 @@ struct LibraryView: View {
                     }
                     .accessibilityLabel("Toggle favorites")
                 }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingImporter = true
+                    } label: {
+                        Image(systemName: "tray.and.arrow.down")
+                    }
+                    .accessibilityLabel("Import recipes")
+                }
             }
             .onAppear {
                 vm.setRepository(repository)
@@ -54,6 +64,33 @@ struct LibraryView: View {
             .onChange(of: vm.favoritesOnly) { _ in vm.search() }
             .onReceive(repository.$recipes) { _ in vm.search() }
             .searchable(text: $vm.query, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search recipes")
+            .fileImporter(isPresented: $showingImporter, allowedContentTypes: [.json, .commaSeparatedText], allowsMultipleSelection: false) { result in
+                switch result {
+                case .success(let urls):
+                    guard let url = urls.first else { return }
+                    do {
+                        let data = try Data(contentsOf: url)
+                        let importer = ImportService()
+                        let imported: [Recipe]
+                        if url.pathExtension.lowercased() == "json" {
+                            imported = (try? importer.importJSON(data: data)) ?? []
+                        } else {
+                            imported = (try? importer.importCSV(data: data)) ?? []
+                        }
+                        for r in imported { repository.add(r) }
+                        vm.search()
+                    } catch {
+                        importError = "Failed to import file."
+                    }
+                case .failure:
+                    break
+                }
+            }
+            .alert("Import Error", isPresented: Binding(get: { importError != nil }, set: { _ in importError = nil })) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(importError ?? "")
+            }
         }
     }
 }
