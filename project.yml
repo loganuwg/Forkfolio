@@ -37,6 +37,13 @@ targets:
       - path: iOS/Tests
     dependencies:
       - target: Forkfolio
+  ForkfolioUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: iOS/UITests
+    dependencies:
+      - target: Forkfolio
 schemes:
   Forkfolio:
     build:
@@ -48,3 +55,4 @@ schemes:
       config: Debug
       targets:
         - ForkfolioTests
+        - ForkfolioUITests
