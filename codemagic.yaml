@@ -22,14 +22,10 @@ workflows:
           rm -rf result.xcresult
           xcodebuild -project "$XCODE_PROJECT" -scheme "$XCODE_SCHEME" -sdk iphonesimulator -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 15' test -resultBundlePath result.xcresult -only-testing:ForkfolioUITests | xcpretty || true
           mkdir -p Screenshots
-          # Extract attachments (screenshots) from xcresult
-          # Use xcparse if available; fallback to copying the bundle
-          if command -v xcparse >/dev/null 2>&1; then
-            brew install chargepoint/xcparse/xcparse || true
-            xcparse attachments result.xcresult Screenshots || true
-          else
-            cp -R result.xcresult Screenshots/result.xcresult || true
-          fi
+          brew tap chargepoint/xcparse || true
+          brew install xcparse || true
+          # Extract only screenshot attachments as PNGs into Screenshots/
+          xcparse attachments result.xcresult Screenshots --only screenshots || true
       - name: Note
         script: |
           echo "Configure signing and TestFlight deployment in Codemagic once Apple credentials are available."
