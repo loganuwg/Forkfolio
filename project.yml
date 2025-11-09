@@ -28,8 +28,6 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.lifestyle
         INFOPLIST_KEY_UIRequiresFullScreen: NO
         INFOPLIST_KEY_UIUserInterfaceStyle: Automatic
-    scheme:
-      testTargets: []
   ForkfolioTests:
     type: bundle.unit-test
     platform: iOS
