@@ -7,6 +7,7 @@ struct ForkfolioApp: App {
         WindowGroup {
             LibraryView()
                 .environmentObject(repository)
+                .tint(Theme.primary)
         }
     }
 }
